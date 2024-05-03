@@ -1,0 +1,1 @@
+from fasts2.main import S2GoogleTask
