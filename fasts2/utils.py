@@ -1,6 +1,9 @@
+import pathlib
+from typing import Union
+
 import ee
 import pydantic
-
+import torch
 from pyproj import Transformer
 from shapely.geometry import Polygon
 
@@ -9,21 +12,20 @@ def fix_coordinates(params: pydantic.BaseModel) -> tuple:
     # Get the projection metadata
     projection_data = (
         ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED")
-          .filterBounds(ee.Geometry.Point(params.lon, params.lat))
-          .filterDate("2021-01-01", "2021-01-31")
-          .select("B1")
+        .filterBounds(ee.Geometry.Point(params.lon, params.lat))
+        .filterDate("2021-01-01", "2021-01-31")
+        .select("B1")
     )
 
     # Create a reference polygon
     ref_polygon = Polygon(
         (
             ee.Geometry.Point(params.lon, params.lat)
-                       .buffer(params.patch_size//2)
-                       .bounds()
-                       .getInfo()["coordinates"][0]
+            .buffer(params.patch_size // 2)
+            .bounds()
+            .getInfo()["coordinates"][0]
         )
     )
-
 
     # Get the grids available searching in a month
     grids_available_options = projection_data.aggregate_array("MGRS_TILE").getInfo()
@@ -32,15 +34,14 @@ def fix_coordinates(params: pydantic.BaseModel) -> tuple:
         if grid not in grids_available:
             grids_available.append(grid)
 
-
     # The best grid is the one with the biggest intersection
     best_grid = 0
     for grid in grids_available:
         footprint = (
             projection_data.filterMetadata("MGRS_TILE", "equals", grid)
-                           .first()
-                           .get("system:footprint")
-                           .getInfo()
+            .first()
+            .get("system:footprint")
+            .getInfo()
         )
         footprint_polygon = Polygon(footprint["coordinates"])
 
@@ -51,9 +52,9 @@ def fix_coordinates(params: pydantic.BaseModel) -> tuple:
 
     projection_data = (
         projection_data.filterMetadata("MGRS_TILE", "equals", best_tile)
-                       .first()
-                       .projection()
-                       .getInfo()
+        .first()
+        .projection()
+        .getInfo()
     )
 
     # Get the CRS
@@ -67,7 +68,7 @@ def fix_coordinates(params: pydantic.BaseModel) -> tuple:
     scale_x = projection_data["transform"][0]
     scale_y = projection_data["transform"][4]
 
-    # From WGS84 to UTM     
+    # From WGS84 to UTM
     transformer = Transformer.from_crs("EPSG:4326", crs, always_xy=True)
     utm_coords = transformer.transform(params.lon, params.lat)
 
@@ -96,3 +97,11 @@ def fix_coordinates(params: pydantic.BaseModel) -> tuple:
     params.s2_topleft_coords = s2_topleft_coords
 
     return params
+
+
+def load_cloud_model(model_file: Union[str, pathlib.Path]):
+    model_file = pathlib.Path(model_file)
+    if not model_file.exists():
+        URL = "https://huggingface.co/datasets/isp-uv-es/CloudSEN12Plus/resolve/main/demo/models/L2A_EfficientNetUnet.pt"
+        torch.hub.download_url_to_file(URL, model_file)
+    return torch.jit.load(model_file)
