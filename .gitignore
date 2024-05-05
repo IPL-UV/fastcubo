@@ -3,3 +3,5 @@ demo.py
 cloudscore.pt
 
 fasts2/__pycache__/
+
+data/
