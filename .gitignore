@@ -5,3 +5,5 @@ cloudscore.pt
 fasts2/__pycache__/
 
 data/
+
+dist/
