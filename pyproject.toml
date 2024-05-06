@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fasts2"
-version = "0.0.3"
+version = "0.0.4"
 description = "🏎💨vroom vroom - S2 imagery downloader"
 authors = ["Cesar Aybar <fcesar.aybar@uv.es>"]
 repository = "https://github.com/csaybar/fastS2"
@@ -16,7 +16,7 @@ pydantic = ">=2.0.0"
 planetary-computer = ">=1.0.0"
 pystac-client = ">=0.7.7"
 stackstac = ">=0.5.0"
-torch = ">=2.2.0"
+torch = ">=2.0.0"
 earthengine-api = ">=0.1.400"
 shapely = ">=2.0.4"
 
