@@ -3,7 +3,6 @@ from typing import Any, List, Literal, Optional, Union
 
 import pydantic
 import torch
-
 from fasts2.task1 import t1_worker
 from fasts2.task2 import t2_cleaner, t2_worker
 from fasts2.utils import fix_coordinates, load_cloud_model
