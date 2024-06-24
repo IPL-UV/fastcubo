@@ -1,50 +1,84 @@
-# fastS2
+# FastCubo
 
-[![Release](https://img.shields.io/github/v/release/csaybar/fastS2)](https://img.shields.io/github/v/release/csaybar/fastS2)
-[![Build status](https://img.shields.io/github/actions/workflow/status/csaybar/fastS2/main.yml?branch=main)](https://github.com/csaybar/fastS2/actions/workflows/main.yml?query=branch%3Amain)
-[![codecov](https://codecov.io/gh/csaybar/fastS2/branch/main/graph/badge.svg)](https://codecov.io/gh/csaybar/fastS2)
-[![Commit activity](https://img.shields.io/github/commit-activity/m/csaybar/fastS2)](https://img.shields.io/github/commit-activity/m/csaybar/fastS2)
-[![License](https://img.shields.io/github/license/csaybar/fastS2)](https://img.shields.io/github/license/csaybar/fastS2)
+A simple API for `ee.data.pixels` inspired by [cubo](https://github.com/ESDS-Leipzig/cubo), designed for creating and managing data cubes up to 10 times faster.
 
-🏎💨 vroom vroom S2 imagery
+## Installation
 
-- **Github repository**: <https://github.com/csaybar/fastS2/>
-- **Documentation** <https://csaybar.github.io/fastS2/>
-
-## Getting started with your project
-
-First, create a repository on GitHub with the same name as this project, and then run the following commands:
+Install the latest version from PyPI:
 
 ```bash
-git init -b main
-git add .
-git commit -m "init commit"
-git remote add origin git@github.com:csaybar/fastS2.git
-git push -u origin main
+pip install cubo
 ```
 
-Finally, install the environment and the pre-commit hooks with
+Install cubo with the required GEE dependencies from PyPI:
 
 ```bash
-make install
+pip install cubo[ee]
 ```
 
-You are now ready to start development on your project!
-The CI/CD pipeline will be triggered when you open a pull request, merge to main, or when you create a new release.
+Upgrade cubo by running:
 
-To finalize the set-up for publishing to PyPi or Artifactory, see [here](https://fpgmaas.github.io/cookiecutter-poetry/features/publishing/#set-up-for-pypi).
-For activating the automatic documentation with MkDocs, see [here](https://fpgmaas.github.io/cookiecutter-poetry/features/mkdocs/#enabling-the-documentation-on-github).
-To enable the code coverage reports, see [here](https://fpgmaas.github.io/cookiecutter-poetry/features/codecov/).
+```bash
+pip install -U cubo
+```
 
-## Releasing a new version
+Install the latest version from conda-forge:
 
-- Create an API Token on [Pypi](https://pypi.org/).
-- Add the API Token to your projects secrets with the name `PYPI_TOKEN` by visiting [this page](https://github.com/csaybar/fastS2/settings/secrets/actions/new).
-- Create a [new release](https://github.com/csaybar/fastS2/releases/new) on Github.
-- Create a new tag in the form `*.*.*`.
+```bash
+conda install -c conda-forge cubo
+```
 
-For more details, see [here](https://fpgmaas.github.io/cookiecutter-poetry/features/cicd/#how-to-trigger-a-release).
+Install the latest dev version from GitHub by running:
 
----
+```bash
+pip install git+https://github.com/davemlz/cubo
+```
 
-Repository initiated with [fpgmaas/cookiecutter-poetry](https://github.com/fpgmaas/cookiecutter-poetry).
+
+## How to use
+
+
+Download a S2 data cube.
+
+```python
+
+import fastcubo
+import ee
+
+ee.Initialize(opt_url="https://earthengine-highvolume.googleapis.com")
+
+table = fastcubo.query_image(
+    task_id= "EU2560_E4521N3012",
+    points=[(51.079225, 10.452173), (-76.5, -9.5)],
+    outnames=["demo_0.tif", "demo_1.tif"],
+    collection="NASA/NASADEM_HGT/001",
+    bands=["elevation", "num", "swb"],
+    edge_size=256,
+    resolution=90
+)
+
+da = fastcubo.downloader(table=table, nworkers=8)
+```
+
+Download DEM data cube
+
+
+```python
+import fastcubo
+import ee
+
+ee.Initialize(opt_url="https://earthengine-highvolume.googleapis.com")
+
+table = fastcubo.query_imagecollection(
+    task_id= "EU2560_E4521N3011", # Task id
+    point=(51.079225, 10.452173),
+    collection="COPERNICUS/S2_HARMONIZED", # Id of the GEE collection
+    bands=["B4","B3","B2"], # Bands to retrieve
+    start_date="2016-06-01", # Start date of the cube
+    end_date="2017-07-01", # End date of the cube
+    edge_size=128, # Edge size of the cube (px)
+    resolution=10, # Pixel size of the cube (m)
+)
+
+da = fastcubo.downloader(table=table, nworkers=8)    
+```
