@@ -79,6 +79,7 @@ def quadsplit_manifest(manifest: dict) -> List[dict]:
 def computePixels_np(
     manifest_dict: dict,
     quiet: Optional[bool] = False,
+    deep_level: Optional[int] = 0,
 ) -> np.ndarray:
     """Implements the computePixels method from
     the Earth Engine API. If the image is too large,
@@ -91,6 +92,11 @@ def computePixels_np(
     Returns:
         np.ndarray: The image as a numpy array
     """
+    if deep_level == 5:
+        raise ValueError(
+            "Deep level reached 5. Aborting."
+            f" Manifest: {manifest_dict}"
+        )
 
     try:
         # Download the data
@@ -116,7 +122,11 @@ def computePixels_np(
                 print(f"Downloading {idx} of 4...")
 
             # Try to obtain the data for the batch
-            dnp = computePixels_np(manifest_dict=manifest_dict_batch, quiet=quiet)
+            dnp = computePixels_np(
+                manifest_dict=manifest_dict_batch,
+                quiet=quiet,
+                deep_level=deep_level + 1,
+            )
 
             # Insert the data in the container
             if idx == 0:
@@ -134,6 +144,7 @@ def computePixels_np(
 def getPixels_np(
     manifest_dict: dict,
     quiet: Optional[bool] = False,
+    deep_level: Optional[int] = 0,
 ) -> np.ndarray:
     """Implements the getPixels method from
     the Earth Engine API. If the image is too large,
@@ -146,6 +157,11 @@ def getPixels_np(
     Returns:
         np.ndarray: The image as a numpy array
     """
+    if deep_level == 5:
+        raise ValueError(
+            "Deep level reached 5. Aborting."
+            f" Manifest: {manifest_dict}"
+        )
 
     try:
         # Download the data
@@ -170,7 +186,11 @@ def getPixels_np(
                 print(f"Downloading {idx} of 4...")
 
             # Obtain the data for the batch
-            dnp = getPixels_np(manifest_dict=manifest_dict_batch, quiet=quiet)
+            dnp = getPixels_np(
+                manifest_dict=manifest_dict_batch,
+                quiet=quiet,
+                deep_level=deep_level + 1,
+            )
 
             # Insert the data in the container
             if idx == 0:
