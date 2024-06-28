@@ -94,8 +94,7 @@ def computePixels_np(
     """
     if deep_level == 5:
         raise ValueError(
-            "Deep level reached 5. Aborting."
-            f" Manifest: {manifest_dict}"
+            "Deep level reached 5. Aborting." f" Manifest: {manifest_dict}"
         )
 
     try:
@@ -159,8 +158,7 @@ def getPixels_np(
     """
     if deep_level == 5:
         raise ValueError(
-            "Deep level reached 5. Aborting."
-            f" Manifest: {manifest_dict}"
+            "Deep level reached 5. Aborting." f" Manifest: {manifest_dict}"
         )
 
     try:
