@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fastcubo"
-version = "0.0.99"
+version = "0.0.999"
 description = "🏎💨vroom vroom - data downloader"
 authors = ["Cesar Aybar <fcesar.aybar@uv.es>"]
 repository = "https://github.com/csaybar/fastcubo"
