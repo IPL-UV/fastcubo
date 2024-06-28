@@ -223,19 +223,24 @@ def getPixels(
     else:
         output_path = pathlib.Path(output_path)
 
-    # Using ThreadPoolExecutor to manage concurrent downloads
-    with concurrent.futures.ThreadPoolExecutor(max_workers=nworkers) as executor:
-        futures = [
-            executor.submit(getImage_batch, row, output_path, "getPixels", quiet)
-            for _, row in table.iterrows()
-        ]
-        # If there is an output_path, raise it
+    if nworkers is None:
         results = []
-        for future in concurrent.futures.as_completed(futures):
-            if future.exception() is not None:
-                raise future.exception()
-            results.append(future.result())
-
+        for _, row in table.iterrows():
+            result = getImage_batch(row, output_path, "getPixels", quiet)
+            results.append(result)
+    else:
+        # Using ThreadPoolExecutor to manage concurrent downloads
+        with concurrent.futures.ThreadPoolExecutor(max_workers=nworkers) as executor:
+            futures = [
+                executor.submit(getImage_batch, row, output_path, "getPixels", quiet)
+                for _, row in table.iterrows()
+            ]
+            # If there is an output_path, raise it
+            results = []
+            for future in concurrent.futures.as_completed(futures):
+                if future.exception() is not None:
+                    raise future.exception()
+                results.append(future.result())
     return results
 
 
@@ -347,17 +352,23 @@ def computePixels(
     else:
         output_path = pathlib.Path(output_path)
 
-    # Using ThreadPoolExecutor to manage concurrent downloads
-    with concurrent.futures.ThreadPoolExecutor(max_workers=nworkers) as executor:
-        futures = [
-            executor.submit(getImage_batch, row, output_path, "computePixels", quiet)
-            for _, row in table.iterrows()
-        ]
-        # If there is an output_path, raise it
+    if nworkers is None:
         results = []
-        for future in concurrent.futures.as_completed(futures):
-            if future.exception() is not None:
-                raise future.exception()
-            results.append(future.result())
+        for _, row in table.iterrows():
+            result = getImage_batch(row, output_path, "computePixels", quiet)
+            results.append(result)
+    else:
+        # Using ThreadPoolExecutor to manage concurrent downloads
+        with concurrent.futures.ThreadPoolExecutor(max_workers=nworkers) as executor:
+            futures = [
+                executor.submit(getImage_batch, row, output_path, "computePixels", quiet)
+                for _, row in table.iterrows()
+            ]
+            # If there is an output_path, raise it
+            results = []
+            for future in concurrent.futures.as_completed(futures):
+                if future.exception() is not None:
+                    raise future.exception()
+                results.append(future.result())
 
     return results
