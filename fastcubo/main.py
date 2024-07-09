@@ -251,7 +251,7 @@ def getPixels(
         # Using ThreadPoolExecutor to manage concurrent downloads
         with concurrent.futures.ThreadPoolExecutor(max_workers=nworkers) as executor:
             futures = [
-                executor.submit(getImage_batch, row, output_path, "getPixels", quiet)
+                executor.submit(getImage_batch, row, output_path, "getPixels", deep_level, quiet)
                 for _, row in table.iterrows()
             ]
             # If there is an output_path, raise it
@@ -356,6 +356,7 @@ def computePixels(
     table: pd.DataFrame,
     nworkers: Optional[int] = None,
     output_path: Union[str, pathlib.Path, None] = None,
+    max_deep_level: Optional[int] = 5,
     quiet: bool = False,
 ) -> None:
     """Create a GeoTIFF file from a query_table
@@ -375,13 +376,19 @@ def computePixels(
     if nworkers is None:
         results = []
         for _, row in table.iterrows():
-            result = getImage_batch(row, output_path, "computePixels", quiet)
+            result = getImage_batch(
+                row=row,
+                output_path=output_path,
+                type="computePixels",
+                max_deep_level=max_deep_level,
+                quiet=quiet
+            )
             results.append(result)
     else:
         # Using ThreadPoolExecutor to manage concurrent downloads
         with concurrent.futures.ThreadPoolExecutor(max_workers=nworkers) as executor:
             futures = [
-                executor.submit(getImage_batch, row, output_path, "computePixels", quiet)
+                executor.submit(getImage_batch, row, output_path, "computePixels", max_deep_level, quiet)
                 for _, row in table.iterrows()
             ]
             # If there is an output_path, raise it

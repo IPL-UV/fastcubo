@@ -79,6 +79,7 @@ def quadsplit_manifest(manifest: dict) -> List[dict]:
 def computePixels_np(
     manifest_dict: dict,
     quiet: Optional[bool] = False,
+    max_deep_level: Optional[int] = 5,
     deep_level: Optional[int] = 0,
 ) -> np.ndarray:
     """Implements the computePixels method from
@@ -92,9 +93,9 @@ def computePixels_np(
     Returns:
         np.ndarray: The image as a numpy array
     """
-    if deep_level == 5:
+    if deep_level == max_deep_level:
         raise ValueError(
-            "Deep level reached 5. Aborting." f" Manifest: {manifest_dict}"
+            "Deep level reached. Aborting." f" Manifest: {manifest_dict}"
         )
 
     try:
@@ -145,7 +146,8 @@ def computePixels_np(
 
 
 def getPixels_np(
-    manifest_dict: dict,    
+    manifest_dict: dict,
+    max_deep_level: Optional[int] = 5,
     deep_level: Optional[int] = 0,
     quiet: Optional[bool] = False
 ) -> np.ndarray:
@@ -160,9 +162,9 @@ def getPixels_np(
     Returns:
         np.ndarray: The image as a numpy array
     """
-    if deep_level == 5:
+    if deep_level == max_deep_level:
         raise ValueError(
-            "Deep level reached 5. Aborting." f" Manifest: {manifest_dict}"
+            "Deep level reached. Aborting." f" Manifest: {manifest_dict}"
         )
 
     try:
@@ -213,12 +215,11 @@ def getPixels_np(
 
     return data_np
 
-
 def getImage_batch(
     row: pd.Series,
     output_path: str,
     type: Literal["getPixels", "computePixels"],
-    deep_level: Optional[int] = 0,
+    max_deep_level: Optional[int] = 5,
     quiet: Optional[bool] = False,    
 ) -> pathlib.Path:
     """Downloads the image from the manifest as a
@@ -240,15 +241,15 @@ def getImage_batch(
             eval(manifest_dict["expression"])
         )
         data_np = computePixels_np(
-            manifest_dict=manifest_dict,            
-            deep_level=deep_level,
+            manifest_dict=manifest_dict,
+            max_deep_level=max_deep_level,
             quiet=quiet,
         )
     
     if type == "getPixels":
         data_np = getPixels_np(
             manifest_dict=manifest_dict,
-            deep_level=deep_level,
+            max_deep_level=max_deep_level,
             quiet=quiet
         )
     
