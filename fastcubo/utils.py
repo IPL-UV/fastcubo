@@ -103,7 +103,11 @@ def computePixels_np(
         with rio.open(io.BytesIO(data)) as f:
             data_np = f.read()
     except Exception as e:
-
+        
+        # Check if the error is due to the image "not being found"
+        if check_not_found_error(str(e)):
+            return False        
+        
         # Create a container for the data
         data_np = np.zeros(
             (
@@ -141,9 +145,9 @@ def computePixels_np(
 
 
 def getPixels_np(
-    manifest_dict: dict,
-    quiet: Optional[bool] = False,
+    manifest_dict: dict,    
     deep_level: Optional[int] = 0,
+    quiet: Optional[bool] = False
 ) -> np.ndarray:
     """Implements the getPixels method from
     the Earth Engine API. If the image is too large,
@@ -164,9 +168,16 @@ def getPixels_np(
     try:
         # Download the data
         data = ee.data.getPixels(manifest_dict)
+
         with rio.open(io.BytesIO(data)) as f:
             data_np = f.read()
+
     except Exception as e:
+
+        # Check if the error is due to the image "not being found"
+        if check_not_found_error(str(e)):
+            return False
+
         # Create a container for the data
         data_np = np.zeros(
             (
@@ -207,7 +218,8 @@ def getImage_batch(
     row: pd.Series,
     output_path: str,
     type: Literal["getPixels", "computePixels"],
-    quiet: Optional[bool] = False,
+    deep_level: Optional[int] = 0,
+    quiet: Optional[bool] = False,    
 ) -> pathlib.Path:
     """Downloads the image from the manifest as a
     GeoTIFF file.
@@ -227,11 +239,21 @@ def getImage_batch(
         manifest_dict["expression"] = ee.deserializer.decode(
             eval(manifest_dict["expression"])
         )
-        data_np = computePixels_np(manifest_dict, quiet=quiet)
-    elif type == "getPixels":
-        data_np = getPixels_np(manifest_dict, quiet=quiet)
-    else:
-        raise ValueError("type must be either 'getPixels' or 'computePixels'")
+        data_np = computePixels_np(
+            manifest_dict=manifest_dict,            
+            deep_level=deep_level,
+            quiet=quiet,
+        )
+    
+    if type == "getPixels":
+        data_np = getPixels_np(
+            manifest_dict=manifest_dict,
+            deep_level=deep_level,
+            quiet=quiet
+        )
+    
+    if data_np is False:
+        return False
 
     # Save the data
     metadata_rio = {
@@ -260,3 +282,10 @@ def getImage_batch(
         dst.write(data_np)
 
     return outfile
+
+
+def check_not_found_error(error_msg) -> bool:
+    wrong_trace_message = "not found"
+    if wrong_trace_message in error_msg:
+        return True
+    return False

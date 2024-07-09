@@ -45,7 +45,7 @@ def query_getPixels_image(
     epsg = [query_utm_crs_info(lon, lat) for lon, lat in points]
     lon_utm, lat_utm, zone_epsg = zip(*epsg)
 
-    # Fix the center of the square to be the centroid
+    # Fix the center of the square to be the upper left corner
     lon_utm = [x - edge_size * resolution / 2 for x in lon_utm]
     lat_utm = [y + edge_size * resolution / 2 for y in lat_utm]
 
@@ -109,7 +109,6 @@ def query_getPixels_imagecollection(
     retrieve the data using `ee.data.getPixels`
 
     Args:
-        task_id (str): The id of the task to be executed
         points (List[Tuple[float, float]]): The centroid
             of the square to be queried.
         outnames (List[str]): The name of the output files
@@ -128,7 +127,7 @@ def query_getPixels_imagecollection(
     # From EPSG to UTM
     lon_utm, lat_utm, zone_epsg = query_utm_crs_info(*point)
 
-    # Fix the center of the square to be the centroid
+    # Fix the center of the square to be the upper left corner
     lon_utm = lon_utm - edge_size * resolution / 2
     lat_utm = lat_utm + edge_size * resolution / 2
 
@@ -205,20 +204,30 @@ def query_getPixels_imagecollection(
 def getPixels(
     table: pd.DataFrame,
     nworkers: Optional[int] = None,
+    deep_level: Optional[int] = 5,
     output_path: Union[str, pathlib.Path, None] = None,
     quiet: bool = False,
 ) -> None:
     """Create a GeoTIFF file from a query_table
 
     Args:
-        qtable (pd.DataFrame): The query_table to be downloaded
+        table (pd.DataFrame): The query_table to be downloaded
+        nworkers (Optional[int], optional): The number of
+            workers to be used. Defaults to None. If None,
+            the download will be done sequentially.
+        deep_level (Optional[int], optional): If the image
+            is too big, a quadtree will be created to download
+            the image in parts. This parameter defines the
+            maximum deep level of the quadtree. Defaults to 5.
         output_path (Optional[str], optional): The path to save
             the file. Defaults to None.
     """
 
     # Save the output_path
-    if output_path is None:
-        output_path = pathlib.Path(table.task_id[0])
+    if output_path is None:        
+        output_path = pathlib.Path(
+            table.iloc[0].collection.replace("/", "_")
+        )
         output_path.mkdir(parents=True, exist_ok=True)
     else:
         output_path = pathlib.Path(output_path)
@@ -226,8 +235,18 @@ def getPixels(
     if nworkers is None:
         results = []
         for _, row in table.iterrows():
-            result = getImage_batch(row, output_path, "getPixels", quiet)
-            results.append(result)
+            
+            # Download the image and return the path
+            result: pathlib.Path = getImage_batch(
+                row=row,
+                output_path=output_path,
+                type="getPixels",
+                deep_level=deep_level,
+                quiet=quiet
+            )
+            
+            if result is not False:
+                results.append(result)
     else:
         # Using ThreadPoolExecutor to manage concurrent downloads
         with concurrent.futures.ThreadPoolExecutor(max_workers=nworkers) as executor:
@@ -240,7 +259,8 @@ def getPixels(
             for future in concurrent.futures.as_completed(futures):
                 if future.exception() is not None:
                     raise future.exception()
-                results.append(future.result())
+                if future.result() is not False:
+                    results.append(future.result())
     return results
 
 
