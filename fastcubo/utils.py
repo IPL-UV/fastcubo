@@ -11,14 +11,16 @@ import utm
 
 
 def query_utm_crs_info(lon: float, lat: float) -> Tuple[float, float, str]:
-    """Converts a pair of lat, lon to UTM coordinates
+    """
+    Converts a pair of lat, lon to UTM coordinates.
 
     Args:
-        lon (float): The longitude of the point
-        lat (float): The latitude of the point
+        lon (float): The longitude of the point.
+        lat (float): The latitude of the point.
+    
     Returns:
-        Tuple[float, float, str]: The UTM coordinates and the
-            EPSG code of the zone
+        Tuple[float, float, str]: The UTM coordinates and the 
+            EPSG code of the zone.
     """
     x, y, zone, _ = utm.from_latlon(lat, lon)
     zone_epsg = f"326{zone:02d}" if lat >= 0 else f"327{zone:02d}"
@@ -26,16 +28,16 @@ def query_utm_crs_info(lon: float, lat: float) -> Tuple[float, float, str]:
 
 
 def quadsplit_manifest(manifest: dict) -> List[dict]:
-    """Splits a manifest in 4 smaller manifests
+    """
+    Splits a manifest into 4 smaller manifests.
 
     Args:
-        manifest (dict): The manifest to be split
+        manifest (dict): The manifest to be split.
 
     Returns:
-        List[dict]: A list of 4 manifests
+        List[dict]: A list of 4 smaller manifests.
     """
-
-    # deep copy the manifest
+    # Deep copy the manifest to avoid modifying the original.
     manifest_copy = deepcopy(manifest)
     new_width = manifest["grid"]["dimensions"]["width"] // 2
     new_height = manifest["grid"]["dimensions"]["height"] // 2
@@ -44,19 +46,18 @@ def quadsplit_manifest(manifest: dict) -> List[dict]:
 
     manifests = []
     for idx in range(4):
-
-        # Load a new manifest
+        # Load a new manifest.
         new_manifest = deepcopy(manifest_copy)
 
-        # Set the scale
+        # Set the scale.
         res_x = manifest["grid"]["affineTransform"]["scaleX"]
         res_y = manifest["grid"]["affineTransform"]["scaleY"]
 
-        # Adjust the width and height
+        # Adjust the width and height.
         if idx == 0:
             add_x = 0
             add_y = 0
-        if idx == 1:
+        elif idx == 1:
             add_x = new_width * res_x
             add_y = 0
         elif idx == 2:
@@ -66,11 +67,11 @@ def quadsplit_manifest(manifest: dict) -> List[dict]:
             add_x = new_width * res_x
             add_y = new_height * res_y
 
-        # Adjust the translation
+        # Adjust the translation.
         new_manifest["grid"]["affineTransform"]["translateX"] += add_x
         new_manifest["grid"]["affineTransform"]["translateY"] += add_y
 
-        # Append the new manifest
+        # Append the new manifest to the list.
         manifests.append(new_manifest)
 
     return manifests
@@ -82,34 +83,39 @@ def computePixels_np(
     max_deep_level: Optional[int] = 5,
     deep_level: Optional[int] = 0,
 ) -> np.ndarray:
-    """Implements the computePixels method from
-    the Earth Engine API. If the image is too large,
-    it splits the image in 4 and downloads the data
-    in batches.
+    """
+    Implements the computePixels method from the Earth 
+    Engine API. If the image is too large, it splits the 
+    image into 4 and downloads the data in batches.
 
     Args:
-        manifest_dict (dict): The manifest to be downloaded
+        manifest_dict (dict): The manifest to be downloaded.
+        quiet (Optional[bool], optional): Suppress output if 
+            True. Defaults to False.
+        max_deep_level (Optional[int], optional): Maximum 
+            recursion depth. Defaults to 5.
+        deep_level (Optional[int], optional): Current recursion 
+            depth. Defaults to 0.
 
     Returns:
-        np.ndarray: The image as a numpy array
+        np.ndarray: The image as a numpy array.
     """
     if deep_level == max_deep_level:
         raise ValueError(
-            "Deep level reached. Aborting." f" Manifest: {manifest_dict}"
+            "Max recursion depth reached. Aborting." f" Manifest: {manifest_dict}"
         )
 
     try:
-        # Download the data
+        # Download the data.
         data = ee.data.computePixels(manifest_dict)
         with rio.open(io.BytesIO(data)) as f:
             data_np = f.read()
     except Exception as e:
-        
-        # Check if the error is due to the image "not being found"
+        # Check if the error is due to the image "not being found".
         if check_not_found_error(str(e)):
             return False        
-        
-        # Create a container for the data
+
+        # Create a container for the data.
         data_np = np.zeros(
             (
                 len(manifest_dict["bandIds"]),
@@ -118,21 +124,22 @@ def computePixels_np(
             )
         )
 
-        # Split the manifest in 4
+        # Split the manifest into 4.
         manifest_dicts = quadsplit_manifest(manifest_dict)
 
         for idx, manifest_dict_batch in enumerate(manifest_dicts):
             if not quiet:
-                print(f"Downloading {idx} of 4...")
+                print(f"Downloading batch {idx + 1} of 4...")
 
-            # Try to obtain the data for the batch
+            # Try to obtain the data for the batch.
             dnp = computePixels_np(
                 manifest_dict=manifest_dict_batch,
                 quiet=quiet,
                 deep_level=deep_level + 1,
+                max_deep_level=max_deep_level  # Pass the max_deep_level.
             )
 
-            # Insert the data in the container
+            # Insert the data into the container.
             if idx == 0:
                 data_np[:, : dnp.shape[1], : dnp.shape[2]] = dnp
             elif idx == 1:
@@ -151,36 +158,41 @@ def getPixels_np(
     deep_level: Optional[int] = 0,
     quiet: Optional[bool] = False
 ) -> np.ndarray:
-    """Implements the getPixels method from
-    the Earth Engine API. If the image is too large,
-    it splits the image in 4 and downloads the data
-    in batches.
+    """
+    Implements the getPixels method from the Earth Engine API.
+    If the image is too large, it splits the image into 4 and 
+    downloads the data in batches.
 
     Args:
-        manifest_dict (dict): The manifest to be downloaded
+        manifest_dict (dict): The manifest to be downloaded.
+        max_deep_level (Optional[int], optional): Maximum 
+            recursion depth. Defaults to 5.
+        deep_level (Optional[int], optional): Current recursion 
+            depth. Defaults to 0.
+        quiet (Optional[bool], optional): Suppress output if True. 
+            Defaults to False.
 
     Returns:
-        np.ndarray: The image as a numpy array
+        np.ndarray: The image as a numpy array.
     """
     if deep_level == max_deep_level:
         raise ValueError(
-            "Deep level reached. Aborting." f" Manifest: {manifest_dict}"
+            "Max recursion depth reached. Aborting." f" Manifest: {manifest_dict}"
         )
 
     try:
-        # Download the data
+        # Download the data.
         data = ee.data.getPixels(manifest_dict)
 
         with rio.open(io.BytesIO(data)) as f:
             data_np = f.read()
 
     except Exception as e:
-
-        # Check if the error is due to the image "not being found"
+        # Check if the error is due to the image "not being found".
         if check_not_found_error(str(e)):
             return False
 
-        # Create a container for the data
+        # Create a container for the data.
         data_np = np.zeros(
             (
                 len(manifest_dict["bandIds"]),
@@ -189,21 +201,22 @@ def getPixels_np(
             )
         )
 
-        # Split the manifest in 4
+        # Split the manifest into 4.
         manifest_dicts = quadsplit_manifest(manifest_dict)
 
         for idx, manifest_dict_batch in enumerate(manifest_dicts):
             if not quiet:
-                print(f"Downloading {idx} of 4...")
+                print(f"Downloading batch {idx + 1} of 4...")
 
-            # Obtain the data for the batch
+            # Obtain the data for the batch.
             dnp = getPixels_np(
                 manifest_dict=manifest_dict_batch,
                 quiet=quiet,
                 deep_level=deep_level + 1,
+                max_deep_level=max_deep_level  # Pass the max_deep_level.
             )
 
-            # Insert the data in the container
+            # Insert the data into the container.
             if idx == 0:
                 data_np[:, : dnp.shape[1], : dnp.shape[2]] = dnp
             elif idx == 1:
@@ -215,6 +228,7 @@ def getPixels_np(
 
     return data_np
 
+
 def getImage_batch(
     row: pd.Series,
     output_path: str,
@@ -222,20 +236,30 @@ def getImage_batch(
     max_deep_level: Optional[int] = 5,
     quiet: Optional[bool] = False,    
 ) -> pathlib.Path:
-    """Downloads the image from the manifest as a
-    GeoTIFF file.
+    """
+    Downloads the image from the manifest as a GeoTIFF file.
 
     Args:
-        manifest_dict (dict): The manifest to be downloaded
-        output_path (str): The path where the file will be saved
+        row (pd.Series): A row from the query table containing 
+            metadata and manifest.
+        output_path (str): The path where the file will be saved.
+        type (Literal["getPixels", "computePixels"]): Type of pixel 
+            computation to perform.
+        max_deep_level (Optional[int], optional): Maximum recursion depth. 
+            Defaults to 5.
+        quiet (Optional[bool], optional): Suppress output if True. Defaults 
+            to False.
+
+    Returns:
+        pathlib.Path: The path to the saved GeoTIFF file.
     """
     if not quiet:
         print(f"Downloading {row.outname}...")
 
-    # Load the manifest
+    # Load the manifest.
     manifest_dict = eval(row.manifest)
 
-    # Download the data
+    # Download the data.
     if type == "computePixels":
         manifest_dict["expression"] = ee.deserializer.decode(
             eval(manifest_dict["expression"])
@@ -246,7 +270,7 @@ def getImage_batch(
             quiet=quiet,
         )
     
-    if type == "getPixels":
+    elif type == "getPixels":
         data_np = getPixels_np(
             manifest_dict=manifest_dict,
             max_deep_level=max_deep_level,
@@ -256,7 +280,7 @@ def getImage_batch(
     if data_np is False:
         return False
 
-    # Save the data
+    # Prepare the metadata for saving the image.
     metadata_rio = {
         "driver": "GTiff",
         "count": data_np.shape[0],
@@ -274,19 +298,28 @@ def getImage_batch(
         "crs": manifest_dict["grid"]["crsCode"],
     }
 
-    # Create the output folder
-    outfile = pathlib.Path(output_path) / (row.outname)
+    # Create the output folder if it doesn't exist.
+    outfile = pathlib.Path(output_path) / row.outname
     outfile.parent.mkdir(parents=True, exist_ok=True)
 
-    # Save the data
+    # Save the data as a GeoTIFF.
     with rio.open(outfile, "w", **metadata_rio) as dst:
         dst.write(data_np)
 
     return outfile
 
 
-def check_not_found_error(error_msg) -> bool:
+def check_not_found_error(error_msg: str) -> bool:
+    """
+    Check if an error message indicates that the image 
+    was not found.
+
+    Args:
+        error_msg (str): The error message to check.
+
+    Returns:
+        bool: True if the error indicates a "not found" 
+            situation, False otherwise.
+    """
     wrong_trace_message = "not found"
-    if wrong_trace_message in error_msg:
-        return True
-    return False
+    return wrong_trace_message in error_msg

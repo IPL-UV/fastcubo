@@ -17,33 +17,32 @@ def query_getPixels_image(
     resolution: float,
     outnames: Optional[List[str]] = None,
 ) -> pd.DataFrame:
-    """Returns a DataFrame with the metadata needed to
-    retrieve the data using `ee.data.getPixels`
+    """
+    Returns a DataFrame with the metadata needed to 
+    retrieve the data using `ee.data.getPixels`.
 
     Args:
-        points (List[Tuple[float, float]]): The centroid
+        points (List[Tuple[float, float]]): The centroid 
             of the square to be queried.
-        outnames (List[str]): The name of the output files
-            to be saved.
-        collection (str): The collection to be queried
-        bands (List[str]): The bands to be queried
-        start_date (str): The start date of the query
-        end_date (str): The end date of the query
-        edge_size (float): The size of the square to be queried
-        resolution (float): The resolution of the query
+        collection (str): The collection to be queried.
+        bands (List[str]): The bands to be queried.
+        edge_size (float): The size of the square to be queried.
+        resolution (float): The resolution of the query.
+        outnames (Optional[List[str]], optional): The name 
+            of the output files to be saved. Defaults to None.
 
     Returns:
-        pd.DataFrame: A DataFrame with the metadata needed to
-            retrieve the data using `ee.data.getPixels`
+        pd.DataFrame: A DataFrame with the metadata needed to 
+            retrieve the data using `ee.data.getPixels`.
     """
 
     if outnames is None:
         basename = collection.replace("/", "_")
-        outnames = [f"%s__%04d.tif" % (basename, i) for i in range(len(points))]
+        outnames = [f"{basename}__{i:04d}.tif" for i in range(len(points))]
 
     # From EPSG to UTM
-    epsg = [query_utm_crs_info(lon, lat) for lon, lat in points]
-    lon_utm, lat_utm, zone_epsg = zip(*epsg)
+    epsg_info = [query_utm_crs_info(lon, lat) for lon, lat in points]
+    lon_utm, lat_utm, zone_epsg = zip(*epsg_info)
 
     # Fix the center of the square to be the upper left corner
     lon_utm = [x - edge_size * resolution / 2 for x in lon_utm]
@@ -105,24 +104,25 @@ def query_getPixels_imagecollection(
     data_range: Tuple[str, str],
     outnames: Optional[List[str]] = None,
 ) -> pd.DataFrame:
-    """Returns a DataFrame with the metadata needed to
-    retrieve the data using `ee.data.getPixels`
+    """
+    Returns a DataFrame with the metadata needed to 
+    retrieve the data using `ee.data.getPixels`.
 
     Args:
-        points (List[Tuple[float, float]]): The centroid
-            of the square to be queried.
-        outnames (List[str]): The name of the output files
-            to be saved.
-        collection (str): The collection to be queried
-        bands (List[str]): The bands to be queried
-        data_range (Tuple[str, str]): The range of dates to
-            be queried in the format (start_date, end_date).
-        edge_size (float): The size of the square to be queried
-        resolution (float): The resolution of the query
+        point (Tuple[float, float]): The centroid of the square 
+            to be queried.
+        collection (str): The collection to be queried.
+        bands (List[str]): The bands to be queried.
+        data_range (Tuple[str, str]): The range of dates to be 
+            queried in the format (start_date, end_date).
+        edge_size (float): The size of the square to be queried.
+        resolution (float): The resolution of the query.
+        outnames (Optional[List[str]], optional): The name of the 
+            output files to be saved. Defaults to None.
 
     Returns:
-        pd.DataFrame: A DataFrame with the metadata needed to
-            retrieve the data using `ee.data.getPixels`
+        pd.DataFrame: A DataFrame with the metadata needed to 
+            retrieve the data using `ee.data.getPixels`.
     """
     # From EPSG to UTM
     lon_utm, lat_utm, zone_epsg = query_utm_crs_info(*point)
@@ -207,54 +207,63 @@ def getPixels(
     deep_level: Optional[int] = 5,
     output_path: Union[str, pathlib.Path, None] = None,
     quiet: bool = False,
-) -> None:
-    """Create a GeoTIFF file from a query_table
+) -> List[pathlib.Path]:
+    """
+    Create GeoTIFF files from a query_table.
 
     Args:
-        table (pd.DataFrame): The query_table to be downloaded
-        nworkers (Optional[int], optional): The number of
-            workers to be used. Defaults to None. If None,
-            the download will be done sequentially.
-        deep_level (Optional[int], optional): If the image
-            is too big, a quadtree will be created to download
-            the image in parts. This parameter defines the
-            maximum deep level of the quadtree. Defaults to 5.
-        output_path (Optional[str], optional): The path to save
-            the file. Defaults to None.
+        table (pd.DataFrame): The query_table to be downloaded.
+        nworkers (Optional[int], optional): The number of workers 
+            to be used. Defaults to None. If None, the download 
+            will be done sequentially.
+        deep_level (Optional[int], optional): If the image is too 
+            big, a quadtree will be created to download the image 
+            in parts. This parameter defines the maximum deep level 
+            of the quadtree. Defaults to 5.
+        output_path (Union[str, pathlib.Path, None], optional): The path 
+            to save the files. Defaults to None.
+        quiet (bool, optional): If True, suppress output messages. 
+            Defaults to False.
+
+    Returns:
+        List[pathlib.Path]: A list of paths to the downloaded GeoTIFF 
+        files.
     """
 
-    # Save the output_path
-    if output_path is None:        
-        output_path = pathlib.Path(
-            table.iloc[0].collection.replace("/", "_")
-        )
+    # Set the output path
+    if output_path is None:
+        output_path = pathlib.Path(table.iloc[0].collection.replace("/", "_"))
         output_path.mkdir(parents=True, exist_ok=True)
     else:
         output_path = pathlib.Path(output_path)
 
     if nworkers is None:
-        results = []
-        for _, row in table.iterrows():
-            
-            # Download the image and return the path
-            result: pathlib.Path = getImage_batch(
+        results = [
+            getImage_batch(
                 row=row,
                 output_path=output_path,
                 type="getPixels",
                 deep_level=deep_level,
                 quiet=quiet
             )
-            
-            if result is not False:
-                results.append(result)
+            for _, row in table.iterrows()
+            if getImage_batch(
+                row=row,
+                output_path=output_path,
+                type="getPixels",
+                deep_level=deep_level,
+                quiet=quiet
+            ) is not False
+        ]
     else:
         # Using ThreadPoolExecutor to manage concurrent downloads
         with concurrent.futures.ThreadPoolExecutor(max_workers=nworkers) as executor:
             futures = [
-                executor.submit(getImage_batch, row, output_path, "getPixels", deep_level, quiet)
+                executor.submit(
+                    getImage_batch, row, output_path, "getPixels", deep_level, quiet
+                )
                 for _, row in table.iterrows()
             ]
-            # If there is an output_path, raise it
             results = []
             for future in concurrent.futures.as_completed(futures):
                 if future.exception() is not None:
@@ -272,36 +281,36 @@ def query_computePixels_image(
     resolution: float,
     outnames: Optional[List[str]] = None,
 ) -> pd.DataFrame:
-    """Returns a DataFrame with the metadata needed to
-    retrieve the data using `ee.data.getPixels`
+    """
+    Returns a DataFrame with the metadata needed to 
+    retrieve the data using `ee.data.getPixels`.
 
     Args:
-        points (List[Tuple[float, float]]): The centroid
-            of the square to be queried.
-        outnames (List[str]): The name of the output files
-            to be saved.
-        collection (str): The collection to be queried
-        bands (List[str]): The bands to be queried
-        start_date (str): The start date of the query
-        end_date (str): The end date of the query
-        edge_size (float): The size of the square to be queried
-        resolution (float): The resolution of the query
+        points (List[Tuple[float, float]]): The centroid of 
+            the square to be queried.
+        expression (ee.Image): The Earth Engine image expression 
+            to be queried.
+        bands (List[str]): The bands to be queried.
+        edge_size (float): The size of the square to be queried.
+        resolution (float): The resolution of the query.
+        outnames (Optional[List[str]], optional): The name of 
+            the output files to be saved. Defaults to None.
 
     Returns:
-        pd.DataFrame: A DataFrame with the metadata needed to
-            retrieve the data using `ee.data.getPixels`
+        pd.DataFrame: A DataFrame with the metadata needed to 
+            retrieve the data using `ee.data.getPixels`.
     """
     if outnames is None:
         regex_exp = re.compile(r'"constantValue":\s*"([^"]*)"')
         product_id = re.findall(regex_exp, expression.serialize())[0]
         basename = product_id.replace("/", "_")
-        outnames = [f"%s__%04d.tif" % (basename, i) for i in range(len(points))]
+        outnames = [f"{basename}__{i:04d}.tif" for i in range(len(points))]
 
     # From EPSG to UTM
-    epsg = [query_utm_crs_info(lon, lat) for lon, lat in points]
-    lon_utm, lat_utm, zone_epsg = zip(*epsg)
+    epsg_info = [query_utm_crs_info(lon, lat) for lon, lat in points]
+    lon_utm, lat_utm, zone_epsg = zip(*epsg_info)
 
-    # Fix the center of the square to be the centroid
+    # Fix the center of the square to be the upper left corner
     lon_utm = [x - edge_size * resolution / 2 for x in lon_utm]
     lat_utm = [y + edge_size * resolution / 2 for y in lat_utm]
 
@@ -358,44 +367,67 @@ def computePixels(
     output_path: Union[str, pathlib.Path, None] = None,
     max_deep_level: Optional[int] = 5,
     quiet: bool = False,
-) -> None:
-    """Create a GeoTIFF file from a query_table
+) -> List[pathlib.Path]:
+    """
+    Create GeoTIFF files from a query_table.
 
     Args:
-        qtable (pd.DataFrame): The query_table to be downloaded
-        output_path (Optional[str], optional): The path to save
-            the file. Defaults to None.
+        table (pd.DataFrame): The query_table to be downloaded.
+        nworkers (Optional[int], optional): The number of workers 
+            to be used. Defaults to None. If None, the download 
+            will be done sequentially.
+        output_path (Union[str, pathlib.Path, None], optional): The 
+            path to save the files. Defaults to None.
+        max_deep_level (Optional[int], optional): If the image is 
+            too big, a quadtree will be created to download the 
+            image in parts. This parameter defines the maximum deep 
+            level of the quadtree. Defaults to 5.
+        quiet (bool, optional): If True, suppress output messages. 
+            Defaults to False.
+
+    Returns:
+        List[pathlib.Path]: A list of paths to the downloaded 
+            GeoTIFF files.
     """
 
-    # Save the output_path
+    # Set the output path
     if output_path is None:
         output_path = pathlib.Path(".")
     else:
         output_path = pathlib.Path(output_path)
 
     if nworkers is None:
-        results = []
-        for _, row in table.iterrows():
-            result = getImage_batch(
+        results = [
+            getImage_batch(
                 row=row,
                 output_path=output_path,
                 type="computePixels",
                 max_deep_level=max_deep_level,
                 quiet=quiet
             )
-            results.append(result)
+            for _, row in table.iterrows()
+            if getImage_batch(
+                row=row,
+                output_path=output_path,
+                type="computePixels",
+                max_deep_level=max_deep_level,
+                quiet=quiet
+            ) is not False
+        ]
     else:
         # Using ThreadPoolExecutor to manage concurrent downloads
         with concurrent.futures.ThreadPoolExecutor(max_workers=nworkers) as executor:
             futures = [
-                executor.submit(getImage_batch, row, output_path, "computePixels", max_deep_level, quiet)
+                executor.submit(
+                    getImage_batch, row, output_path, "computePixels", max_deep_level, quiet
+                )
                 for _, row in table.iterrows()
             ]
-            # If there is an output_path, raise it
             results = []
             for future in concurrent.futures.as_completed(futures):
                 if future.exception() is not None:
                     raise future.exception()
-                results.append(future.result())
+                if future.result() is not False:
+                    results.append(future.result())
 
     return results

@@ -1,19 +1,68 @@
-# FastCubo
+# 
+<p align="center">
+  <img src="https://huggingface.co/datasets/JulioContrerasH/DataMLSTAC/resolve/main/banner_fastcubo.png" width="100%">
+</p>
 
-A simple API for `ee.data.pixels` inspired by [cubo](https://github.com/ESDS-Leipzig/cubo), designed for creating and managing data cubes up to 10 times faster.
+<p align="center">
+    <em>A Python Package for Efficient Cubic EO Data Processing</em> 🚀
+</p>
 
-## Installation
+<p align="center">
+<a href='https://pypi.python.org/pypi/fastcubo'>
+    <img src='https://img.shields.io/pypi/v/fastcubo.svg' alt='PyPI' />
+</a>
+<a href='https://anaconda.org/conda-forge/fastcubo'>
+    <img src='https://img.shields.io/conda/vn/conda-forge/fastcubo.svg' alt='conda-forge' />
+</a>
+<a href='https://fastcubo.readthedocs.io/en/latest/?badge=latest'>
+    <img src='https://readthedocs.org/projects/fastcubo/badge/?version=latest' alt='Documentation Status' />
+</a>
+<a href="https://opensource.org/licenses/MIT" target="_blank">
+    <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License">
+</a>
+<a href="https://github.com/psf/black" target="_blank">
+    <img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Black">
+</a>
+<a href="https://pycqa.github.io/isort/" target="_blank">
+    <img src="https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336" alt="isort">
+</a>
+</p>
 
+---
+
+**GitHub**: [https://github.com/IPL-UV/fastcubo](https://github.com/IPL-UV/fastcubo) 🌐
+
+**Documentation**: [https://fastcubo.readthedocs.io/](https://fastcubo.readthedocs.io/) 📖
+
+**PyPI**: [https://pypi.org/project/fastcubo/](https://pypi.org/project/fastcubo/) 🛠️
+
+**Conda-forge**: [https://anaconda.org/conda-forge/fastcubo](https://anaconda.org/conda-forge/fastcubo) 🐍
+
+**Tutorials**: [https://fastcubo.readthedocs.io/en/latest/tutorials.html](https://fastcubo.readthedocs.io/en/latest/tutorials.html) 🎓
+
+---
+
+## Overview 📊
+
+**FastCubo** is a powerful and simple API, inspired by the [cubo](https://github.com/ESDS-Leipzig/cubo) package, designed to simplify and accelerate the process of working with Google Earth Engine (GEE) data. FastCubo offers an optimized interface for creating and managing data cubes, enabling operations up to 10 times faster than traditional methods. Whether you're working with single images, collections, or complex computations, FastCubo provides the tools you need to handle large datasets efficiently.
+
+## Key Features ✨
+- **Fast Image and Collection downloads**: Retrieve images and image collections from GEE with unparalleled speed, leveraging multi-threaded downloads. 📥
+- **Efficient data cube management**: Split large images into smaller, manageable sub-cubes for optimized processing. 🧩
+- **Compute pixels with ease**: Perform complex pixel computations directly on GEE images, with results efficiently processed and downloaded. 🖥️
+- **Scalable to large datasets**: Handle large-scale data without compromising performance, thanks to advanced memory and processing optimizations. 📈
+
+## Installation ⚙️
 Install the latest version from PyPI:
 
 ```bash
 pip install fastcubo
 ```
 
-## How to use
+## How to use 🛠️
 
 
-Download a ee.Image
+### Download a `ee.Image` 🌍
 
 ```python
 import ee
@@ -33,7 +82,7 @@ table = fastcubo.query_getPixels_image(
 fastcubo.getPixels(table, nworkers=4, output_path="demo1")
 ```
 
-Download a ee.ImageCollection
+### Download a `ee.ImageCollection` 📚
 
 ```python
 import fastcubo
@@ -53,7 +102,7 @@ fastcubo.getPixels(table, nworkers=4, output_path="demo2")
 ```
 
 
-Download a ee.Image Compute Pixels
+### Download a `ee.Image` Compute Pixels 🧮
 
 ```python
 import fastcubo
