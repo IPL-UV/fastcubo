@@ -1,6 +1,6 @@
 # 
 <p align="center">
-  <img src="https://huggingface.co/datasets/JulioContrerasH/DataMLSTAC/resolve/main/banner_fastcubo.png" width="100%">
+  <img src="#" width="100%">
 </p>
 
 <p align="center">
