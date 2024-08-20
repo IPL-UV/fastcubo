@@ -11,12 +11,6 @@
 <a href='https://pypi.python.org/pypi/fastcubo'>
     <img src='https://img.shields.io/pypi/v/fastcubo.svg' alt='PyPI' />
 </a>
-<a href='https://anaconda.org/conda-forge/fastcubo'>
-    <img src='https://img.shields.io/conda/vn/conda-forge/fastcubo.svg' alt='conda-forge' />
-</a>
-<a href='https://fastcubo.readthedocs.io/en/latest/?badge=latest'>
-    <img src='https://readthedocs.org/projects/fastcubo/badge/?version=latest' alt='Documentation Status' />
-</a>
 <a href="https://opensource.org/licenses/MIT" target="_blank">
     <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License">
 </a>
@@ -32,13 +26,7 @@
 
 **GitHub**: [https://github.com/IPL-UV/fastcubo](https://github.com/IPL-UV/fastcubo) 🌐
 
-**Documentation**: [https://fastcubo.readthedocs.io/](https://fastcubo.readthedocs.io/) 📖
-
 **PyPI**: [https://pypi.org/project/fastcubo/](https://pypi.org/project/fastcubo/) 🛠️
-
-**Conda-forge**: [https://anaconda.org/conda-forge/fastcubo](https://anaconda.org/conda-forge/fastcubo) 🐍
-
-**Tutorials**: [https://fastcubo.readthedocs.io/en/latest/tutorials.html](https://fastcubo.readthedocs.io/en/latest/tutorials.html) 🎓
 
 ---
 
