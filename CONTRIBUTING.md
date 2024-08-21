@@ -57,7 +57,7 @@ We welcome contributions from the community! Every contribution, no matter how s
 - **Write documentation:** 📚 Contribute to the documentation in the official docs, docstrings, or through blog posts and articles.
 - **Submit feedback:** 💬 Propose new features or give feedback by filing an issue on GitHub. 
   - Use the [FastCubo GitHub issues page](https://github.com/IPL-UV/fastcubo/issues) for feedback.
-
+<!-- 
 ## **Acknowledgements** 🙏
 
 We are grateful to our contributors for their efforts in making FastCubo better:
@@ -70,4 +70,4 @@ We are grateful to our contributors for their efforts in making FastCubo better:
 | [![David Montero](https://avatars.githubusercontent.com/u/49817852?v=4)](https://github.com/davemlz) | [![Julio Contreras](https://avatars.githubusercontent.com/u/126512018?v=4)](https://github.com/JulioContrerasH) | [![Jeanett Valladares](https://avatars.githubusercontent.com/u/86890658?v=4)](https://github.com/jeanevh) |
 | [David Montero](https://github.com/davemlz) | [Julio Contreras](https://github.com/JulioContrerasH) | [Jeanett Valladares](https://github.com/jeanevh) ||
 
-Thank you to all our contributors! Your hard work and dedication make FastCubo possible. 🌟
+Thank you to all our contributors! Your hard work and dedication make FastCubo possible. 🌟 -->

@@ -80,11 +80,11 @@ ee.Initialize(opt_url="https://earthengine-highvolume.googleapis.com")
 
 table = fastcubo.query_getPixels_imagecollection(
     point=(51.079225, 10.452173),
-    collection="COPERNICUS/S2_HARMONIZED", # Id of the GEE collection
-    bands=["B4","B3","B2"], # Bands to retrieve
-    data_range=["2016-06-01", "2017-07-01"], # Date range of the data
-    edge_size=128, # Edge size of the cube (px)
-    resolution=10, # Pixel size of the cube (m)
+    collection="COPERNICUS/S2_HARMONIZED",
+    bands=["B4","B3","B2"],
+    data_range=["2016-06-01", "2017-07-01"],
+    edge_size=128,
+    resolution=10,
 )
 fastcubo.getPixels(table, nworkers=4, output_path="demo2")
 ```
