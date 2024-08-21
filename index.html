@@ -519,11 +519,11 @@
 
 <span class="n">table</span> <span class="o">=</span> <span class="n">fastcubo</span><span class="o">.</span><span class="n">query_getPixels_imagecollection</span><span class="p">(</span>
     <span class="n">point</span><span class="o">=</span><span class="p">(</span><span class="mf">51.079225</span><span class="p">,</span> <span class="mf">10.452173</span><span class="p">),</span>
-    <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;COPERNICUS/S2_HARMONIZED&quot;</span><span class="p">,</span> <span class="c1"># Id of the GEE collection</span>
-    <span class="n">bands</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;B4&quot;</span><span class="p">,</span><span class="s2">&quot;B3&quot;</span><span class="p">,</span><span class="s2">&quot;B2&quot;</span><span class="p">],</span> <span class="c1"># Bands to retrieve</span>
-    <span class="n">data_range</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;2016-06-01&quot;</span><span class="p">,</span> <span class="s2">&quot;2017-07-01&quot;</span><span class="p">],</span> <span class="c1"># Date range of the data</span>
-    <span class="n">edge_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="c1"># Edge size of the cube (px)</span>
-    <span class="n">resolution</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="c1"># Pixel size of the cube (m)</span>
+    <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;COPERNICUS/S2_HARMONIZED&quot;</span><span class="p">,</span>
+    <span class="n">bands</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;B4&quot;</span><span class="p">,</span><span class="s2">&quot;B3&quot;</span><span class="p">,</span><span class="s2">&quot;B2&quot;</span><span class="p">],</span>
+    <span class="n">data_range</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;2016-06-01&quot;</span><span class="p">,</span> <span class="s2">&quot;2017-07-01&quot;</span><span class="p">],</span>
+    <span class="n">edge_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span>
+    <span class="n">resolution</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">fastcubo</span><span class="o">.</span><span class="n">getPixels</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">nworkers</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="s2">&quot;demo2&quot;</span><span class="p">)</span>
 </code></pre></div>

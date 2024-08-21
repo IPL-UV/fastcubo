@@ -2,22 +2,22 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://mlstac.readthedocs.io/index.html</loc>
-         <lastmod>2024-08-20</lastmod>
+         <lastmod>2024-08-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://mlstac.readthedocs.io/CHANGELOG.html</loc>
-         <lastmod>2024-08-20</lastmod>
+         <lastmod>2024-08-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://mlstac.readthedocs.io/CODE_OF_CONDUCT.html</loc>
-         <lastmod>2024-08-20</lastmod>
+         <lastmod>2024-08-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://mlstac.readthedocs.io/CONTRIBUTING.html</loc>
-         <lastmod>2024-08-20</lastmod>
+         <lastmod>2024-08-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
