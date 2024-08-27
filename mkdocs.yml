@@ -2,9 +2,9 @@ docs_dir: .
 
 # Project information
 site_name: FastCubo
-site_url: https://mlstac.readthedocs.io/
-site_author: FastCubo Contributors
-site_description: A specification for machine learning models in STAC
+site_url: https://ipl-uv.github.io/fastcubo/
+site_author: AndesDataCube Project
+site_description: FastCubo is a Python library for fast and efficient processing of data cubes.
 
 
 # Repository
@@ -49,18 +49,23 @@ nav:
     - Contributing: CONTRIBUTING.md
     - Changelog: CHANGELOG.md
     - Code of conduct: CODE_OF_CONDUCT.md
-  # - Tasks: 
-  #   - ./mlstac/collection/tasks/README.md
-  #   - Remote Sensing:
-  #     - Tensor Classification: ./mlstac/collection/tasks/TensorClassification.md
-  #     - Tensor Regression: ./mlstac/collection/tasks/TensorRegression.md
-  #     - Tensor Object Detection: ./mlstac/collection/tasks/TensorObjectDetection.md
-  #     - Tensor Segmentation: ./mlstac/collection/tasks/TensorSegmentation.md
-  #     - Tensor to Tensor: ./mlstac/collection/tasks/TensorToTensor.md
-    
-  #   - Multimodal:
-  #     - Tensor to Text: ./mlstac/collection/tasks/TensorToText.md
-  #     - Text to Tensor: ./mlstac/collection/tasks/TextToTensor.md
+  - Functions: 
+    - ./docs/FUNCTIONS.md
+    - Query metadata: ./docs/Functions/query_metadata.md
+    - Process Image: ./docs/Functions/process_image.md
+    - Download Data: ./docs/Functions/download_data.md
+  - Processes: 
+    - ./docs/PROCESSES.md
+    - Recursion: ./docs/Process/recursion.md
+    - Concurrency: ./docs/Process/concurrency.md
+    - Parallelism: ./docs/Process/parallelism.md
+    - Difference: ./docs/Process/difference.md
+  - Comparation:
+    - ./docs/COMPARATION.md
+    - Get: ./docs/Comparation/eedatagetPixels.md
+    - Compute: ./docs/Comparation/eedatacomputePixels.md
+    - Comparison: ./docs/Comparation/comparison.md
+    - Conclusion: ./docs/Comparation/conclusion.md
   # - Sample: 
   #   - ./mlstac/sample/README.md
   #   - Specification: ./mlstac/sample/specification.md

@@ -1,0 +1,3 @@
+# **Recursion, concurrency, and parallelism**
+
+In modern programming, especially when dealing with large datasets and computationally intensive tasks, understanding the concepts of recursion, concurrency, and parallelism is crucial. These techniques can significantly optimize performance and efficiency. In the context of the `fastcubo` package, these concepts are leveraged to handle large-scale image processing and data retrieval tasks from Google Earth Engine (GEE). This section provides an overview of each concept and how they are specifically implemented within `fastcubo`.
