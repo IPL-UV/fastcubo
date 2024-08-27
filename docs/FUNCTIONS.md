@@ -1,5 +1,5 @@
 
-# **Functions for images and image collections**
+# Functions for images and image collections
 
 This section explores the functions provided by the `fastcubo` package for working with images and image collections in Google Earth Engine (GEE).
 
