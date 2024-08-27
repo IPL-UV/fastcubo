@@ -4,6 +4,7 @@ from copy import deepcopy
 from typing import List, Literal, Optional, Tuple
 
 import ee
+import gc
 import numpy as np
 import pandas as pd
 import rasterio as rio
@@ -106,21 +107,24 @@ def computePixels_np(
         )
 
     try:
-        # Download the data.
-        data = ee.data.computePixels(manifest_dict)
-        with rio.open(io.BytesIO(data)) as f:
-            data_np = f.read()
-    except Exception as e:
-        # Check if the error is due to the image "not being found".
-        if check_not_found_error(str(e)):
-            return False        
+        # Download the data
+        with io.BytesIO(ee.data.computePixels(manifest_dict)) as f:
+            with rio.open(f) as f:
+                data_np = f.read()
 
-        # Create a container for the data.
+    except Exception as e:
+        print(e)
+        # Check if the error is due to the image "not being found"
+        if check_not_found_error(str(e)):
+            #return False
+            1
+
+        # Create a container for the data
         data_np = np.zeros(
             (
                 len(manifest_dict["bandIds"]),
-                manifest_dict["grid"]["dimensions"]["width"],
-                manifest_dict["grid"]["dimensions"]["height"],
+                int(manifest_dict["grid"]["dimensions"]["width"]),
+                int(manifest_dict["grid"]["dimensions"]["height"]),
             )
         )
 
@@ -148,6 +152,11 @@ def computePixels_np(
                 data_np[:, -dnp.shape[1] :, : dnp.shape[2]] = dnp
             elif idx == 3:
                 data_np[:, -dnp.shape[1] :, -dnp.shape[2] :] = dnp
+
+        # Clean the memory
+        del dnp
+        del manifest_dicts
+        gc.collect()
 
     return data_np
 
@@ -181,11 +190,11 @@ def getPixels_np(
         )
 
     try:
-        # Download the data.
-        data = ee.data.getPixels(manifest_dict)
+        # Download the data
+        with io.BytesIO(ee.data.getPixels(manifest_dict)) as f:
+            with rio.open(f) as f:
+                data_np = f.read()
 
-        with rio.open(io.BytesIO(data)) as f:
-            data_np = f.read()
 
     except Exception as e:
         # Check if the error is due to the image "not being found".
@@ -196,8 +205,8 @@ def getPixels_np(
         data_np = np.zeros(
             (
                 len(manifest_dict["bandIds"]),
-                manifest_dict["grid"]["dimensions"]["width"],
-                manifest_dict["grid"]["dimensions"]["height"],
+                int(manifest_dict["grid"]["dimensions"]["width"]),
+                int(manifest_dict["grid"]["dimensions"]["height"]),
             )
         )
 
@@ -225,6 +234,13 @@ def getPixels_np(
                 data_np[:, -dnp.shape[1] :, : dnp.shape[2]] = dnp
             elif idx == 3:
                 data_np[:, -dnp.shape[1] :, -dnp.shape[2] :] = dnp
+
+        # Clean the memory
+        del dnp
+        del manifest_dicts
+        gc.collect()
+    
+    gc.collect()
 
     return data_np
 
@@ -285,8 +301,8 @@ def getImage_batch(
         "driver": "GTiff",
         "count": data_np.shape[0],
         "dtype": data_np.dtype,
-        "height": manifest_dict["grid"]["dimensions"]["height"],
-        "width": manifest_dict["grid"]["dimensions"]["width"],
+        "height": int(manifest_dict["grid"]["dimensions"]["height"]),
+        "width": int(manifest_dict["grid"]["dimensions"]["width"]),
         "transform": rio.Affine(
             manifest_dict["grid"]["affineTransform"]["scaleX"],
             manifest_dict["grid"]["affineTransform"]["shearX"],
@@ -305,6 +321,10 @@ def getImage_batch(
     # Save the data as a GeoTIFF.
     with rio.open(outfile, "w", **metadata_rio) as dst:
         dst.write(data_np)
+
+    # Clean the memory
+    del data_np
+    gc.collect()
 
     return outfile
 
