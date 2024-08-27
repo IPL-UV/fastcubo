@@ -838,7 +838,7 @@
 </p>
 
 <p align="center">
-    <em>A Python Package for Efficient Cubic EO Data Processing</em> 🚀
+    <em>A Python package for efficient processing of cubic earth observation (EO) data</em> 🚀
 </p>
 
 <p align="center">
@@ -860,21 +860,21 @@
 <p><strong>GitHub</strong>: <a href="https://github.com/IPL-UV/fastcubo">https://github.com/IPL-UV/fastcubo</a> 🌐</p>
 <p><strong>PyPI</strong>: <a href="https://pypi.org/project/fastcubo/">https://pypi.org/project/fastcubo/</a> 🛠️</p>
 <hr />
-<h2 id="overview">Overview 📊</h2>
+<h2 id="overview"><strong>Overview 📊</strong></h2>
 <p><strong>FastCubo</strong> is a powerful and simple API, inspired by the <a href="https://github.com/ESDS-Leipzig/cubo">cubo</a> package, designed to simplify and accelerate the process of working with Google Earth Engine (GEE) data. FastCubo offers an optimized interface for creating and managing data cubes, enabling operations up to 10 times faster than traditional methods. Whether you're working with single images, collections, or complex computations, FastCubo provides the tools you need to handle large datasets efficiently.</p>
-<h2 id="key-features">Key Features ✨</h2>
+<h2 id="key-features"><strong>Key Features ✨</strong></h2>
 <ul>
 <li><strong>Fast Image and Collection downloads</strong>: Retrieve images and image collections from GEE with unparalleled speed, leveraging multi-threaded downloads. 📥</li>
 <li><strong>Efficient data cube management</strong>: Split large images into smaller, manageable sub-cubes for optimized processing. 🧩</li>
 <li><strong>Compute pixels with ease</strong>: Perform complex pixel computations directly on GEE images, with results efficiently processed and downloaded. 🖥️</li>
 <li><strong>Scalable to large datasets</strong>: Handle large-scale data without compromising performance, thanks to advanced memory and processing optimizations. 📈</li>
 </ul>
-<h2 id="installation">Installation ⚙️</h2>
+<h2 id="installation"><strong>Installation ⚙️</strong></h2>
 <p>Install the latest version from PyPI:</p>
 <div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>fastcubo
 </code></pre></div>
-<h2 id="how-to-use">How to use 🛠️</h2>
-<h3 id="download-a-eeimage">Download a <code>ee.Image</code> 🌍</h3>
+<h2 id="how-to-use"><strong>How to use 🛠️</strong></h2>
+<h3 id="download-a-eeimage"><strong>Download a <code>ee.Image</code> 🌍</strong></h3>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">ee</span>
 <span class="kn">import</span> <span class="nn">fastcubo</span>
 
@@ -891,7 +891,7 @@
 
 <span class="n">fastcubo</span><span class="o">.</span><span class="n">getPixels</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">nworkers</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="s2">&quot;demo1&quot;</span><span class="p">)</span>
 </code></pre></div>
-<h3 id="download-a-eeimagecollection">Download a <code>ee.ImageCollection</code> 📚</h3>
+<h3 id="download-a-eeimagecollection"><strong>Download a <code>ee.ImageCollection</code> 📚</strong></h3>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">fastcubo</span>
 <span class="kn">import</span> <span class="nn">ee</span>
 
@@ -907,7 +907,7 @@
 <span class="p">)</span>
 <span class="n">fastcubo</span><span class="o">.</span><span class="n">getPixels</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">nworkers</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="s2">&quot;demo2&quot;</span><span class="p">)</span>
 </code></pre></div>
-<h3 id="download-a-eeimage-compute-pixels">Download a <code>ee.Image</code> Compute Pixels 🧮</h3>
+<h3 id="download-a-eeimage-compute-pixels"><strong>Download a <code>ee.Image</code> Compute Pixels 🧮</strong></h3>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">fastcubo</span>
 <span class="kn">import</span> <span class="nn">ee</span>
 
