@@ -4,7 +4,7 @@
 </p>
 
 <p align="center">
-    <em>A Python Package for Efficient Cubic EO Data Processing</em> 🚀
+    <em>A Python package for efficient processing of cubic earth observation (EO) data</em> 🚀
 </p>
 
 <p align="center">
@@ -30,27 +30,27 @@
 
 ---
 
-## Overview 📊
+## **Overview 📊**
 
 **FastCubo** is a powerful and simple API, inspired by the [cubo](https://github.com/ESDS-Leipzig/cubo) package, designed to simplify and accelerate the process of working with Google Earth Engine (GEE) data. FastCubo offers an optimized interface for creating and managing data cubes, enabling operations up to 10 times faster than traditional methods. Whether you're working with single images, collections, or complex computations, FastCubo provides the tools you need to handle large datasets efficiently.
 
-## Key Features ✨
+## **Key Features ✨**
 - **Fast Image and Collection downloads**: Retrieve images and image collections from GEE with unparalleled speed, leveraging multi-threaded downloads. 📥
 - **Efficient data cube management**: Split large images into smaller, manageable sub-cubes for optimized processing. 🧩
 - **Compute pixels with ease**: Perform complex pixel computations directly on GEE images, with results efficiently processed and downloaded. 🖥️
 - **Scalable to large datasets**: Handle large-scale data without compromising performance, thanks to advanced memory and processing optimizations. 📈
 
-## Installation ⚙️
+## **Installation ⚙️**
 Install the latest version from PyPI:
 
 ```bash
 pip install fastcubo
 ```
 
-## How to use 🛠️
+## **How to use 🛠️**
 
 
-### Download a `ee.Image` 🌍
+### **Download a `ee.Image` 🌍**
 
 ```python
 import ee
@@ -70,7 +70,7 @@ table = fastcubo.query_getPixels_image(
 fastcubo.getPixels(table, nworkers=4, output_path="demo1")
 ```
 
-### Download a `ee.ImageCollection` 📚
+### **Download a `ee.ImageCollection` 📚**
 
 ```python
 import fastcubo
@@ -90,7 +90,7 @@ fastcubo.getPixels(table, nworkers=4, output_path="demo2")
 ```
 
 
-### Download a `ee.Image` Compute Pixels 🧮
+### **Download a `ee.Image` Compute Pixels 🧮**
 
 ```python
 import fastcubo
