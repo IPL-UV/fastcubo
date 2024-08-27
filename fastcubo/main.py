@@ -243,7 +243,7 @@ def getPixels(
                 row=row,
                 output_path=output_path,
                 type="getPixels",
-                deep_level=deep_level,
+                max_deep_level=deep_level,
                 quiet=quiet
             )
             for _, row in table.iterrows()
@@ -251,7 +251,7 @@ def getPixels(
                 row=row,
                 output_path=output_path,
                 type="getPixels",
-                deep_level=deep_level,
+                max_deep_level=deep_level,
                 quiet=quiet
             ) is not False
         ]

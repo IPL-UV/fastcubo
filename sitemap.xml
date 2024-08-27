@@ -1,23 +1,93 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>https://mlstac.readthedocs.io/index.html</loc>
-         <lastmod>2024-08-21</lastmod>
+         <loc>https://ipl-uv.github.io/fastcubo/index.html</loc>
+         <lastmod>2024-08-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://mlstac.readthedocs.io/CHANGELOG.html</loc>
-         <lastmod>2024-08-21</lastmod>
+         <loc>https://ipl-uv.github.io/fastcubo/CHANGELOG.html</loc>
+         <lastmod>2024-08-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://mlstac.readthedocs.io/CODE_OF_CONDUCT.html</loc>
-         <lastmod>2024-08-21</lastmod>
+         <loc>https://ipl-uv.github.io/fastcubo/CODE_OF_CONDUCT.html</loc>
+         <lastmod>2024-08-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://mlstac.readthedocs.io/CONTRIBUTING.html</loc>
-         <lastmod>2024-08-21</lastmod>
+         <loc>https://ipl-uv.github.io/fastcubo/CONTRIBUTING.html</loc>
+         <lastmod>2024-08-27</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://ipl-uv.github.io/fastcubo/docs/COMPARATION.html</loc>
+         <lastmod>2024-08-27</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://ipl-uv.github.io/fastcubo/docs/FUNCTIONS.html</loc>
+         <lastmod>2024-08-27</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://ipl-uv.github.io/fastcubo/docs/PROCESSES.html</loc>
+         <lastmod>2024-08-27</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://ipl-uv.github.io/fastcubo/docs/Comparation/comparison.html</loc>
+         <lastmod>2024-08-27</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://ipl-uv.github.io/fastcubo/docs/Comparation/conclusion.html</loc>
+         <lastmod>2024-08-27</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://ipl-uv.github.io/fastcubo/docs/Comparation/eedatacomputePixels.html</loc>
+         <lastmod>2024-08-27</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://ipl-uv.github.io/fastcubo/docs/Comparation/eedatagetPixels.html</loc>
+         <lastmod>2024-08-27</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://ipl-uv.github.io/fastcubo/docs/Functions/download_data.html</loc>
+         <lastmod>2024-08-27</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://ipl-uv.github.io/fastcubo/docs/Functions/process_image.html</loc>
+         <lastmod>2024-08-27</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://ipl-uv.github.io/fastcubo/docs/Functions/query_metadata.html</loc>
+         <lastmod>2024-08-27</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://ipl-uv.github.io/fastcubo/docs/Process/concurrency.html</loc>
+         <lastmod>2024-08-27</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://ipl-uv.github.io/fastcubo/docs/Process/difference.html</loc>
+         <lastmod>2024-08-27</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://ipl-uv.github.io/fastcubo/docs/Process/parallelism.html</loc>
+         <lastmod>2024-08-27</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://ipl-uv.github.io/fastcubo/docs/Process/recursion.html</loc>
+         <lastmod>2024-08-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>

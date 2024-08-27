@@ -79,9 +79,9 @@ def quadsplit_manifest(manifest: dict) -> List[dict]:
 
 def computePixels_np(
     manifest_dict: dict,
-    quiet: Optional[bool] = False,
     max_deep_level: Optional[int] = 5,
     deep_level: Optional[int] = 0,
+    quiet: Optional[bool] = False,
 ) -> np.ndarray:
     """
     Implements the computePixels method from the Earth 
@@ -90,12 +90,12 @@ def computePixels_np(
 
     Args:
         manifest_dict (dict): The manifest to be downloaded.
-        quiet (Optional[bool], optional): Suppress output if 
-            True. Defaults to False.
         max_deep_level (Optional[int], optional): Maximum 
             recursion depth. Defaults to 5.
         deep_level (Optional[int], optional): Current recursion 
             depth. Defaults to 0.
+        quiet (Optional[bool], optional): Suppress output if 
+            True. Defaults to False.
 
     Returns:
         np.ndarray: The image as a numpy array.
