@@ -2,3 +2,11 @@
     display: flex;
     justify-content: space-evenly;
 }
+
+.md-header {
+    background-color: #d49f0c;
+}
+
+.md-tabs {
+    background-color: #dea609;
+}

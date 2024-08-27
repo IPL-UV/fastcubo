@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fastcubo"
-version = "0.0.99999"
+version = "0.1.5"
 description = "🏎💨vroom vroom - data downloader"
 authors = ["Cesar Aybar <fcesar.aybar@uv.es>"]
 repository = "https://github.com/csaybar/fastcubo"
@@ -12,7 +12,8 @@ packages = [
 
 [tool.poetry.dependencies]
 python = ">=3.9,<4.0"
-pandas = ">=2.0.0"
+numpy = ">=1.25.2"
+pandas = ">=2.0.3"
 utm = "^0.7.0"
 
 [tool.poetry.group.dev.dependencies]
