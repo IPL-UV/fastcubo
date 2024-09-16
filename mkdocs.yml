@@ -32,8 +32,8 @@ theme:
   font:
     text: Roboto
     code: Roboto Mono
-  logo: https://huggingface.co/datasets/JulioContrerasH/DataMLSTAC/resolve/main/logo_fast_cubo_sn_fondo.png
-  favicon: https://huggingface.co/datasets/JulioContrerasH/DataMLSTAC/resolve/main/logo_fast_cubo_sn_fondo.png
+  logo: https://huggingface.co/datasets/JulioContrerasH/DataMLSTAC/resolve/main/logo_fastcubo.png
+  favicon: https://huggingface.co/datasets/JulioContrerasH/DataMLSTAC/resolve/main/logo_fastcubo.png
   features:
     - navigation.instant
     - navigation.tabs
