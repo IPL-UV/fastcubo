@@ -1,4 +1,5 @@
 import io
+import json
 import pathlib
 from copy import deepcopy
 from typing import List, Literal, Optional, Tuple
@@ -297,22 +298,26 @@ def getImage_batch(
         return False
 
     # Prepare the metadata for saving the image.
-    metadata_rio = {
-        "driver": "GTiff",
-        "count": data_np.shape[0],
-        "dtype": data_np.dtype,
-        "height": int(manifest_dict["grid"]["dimensions"]["height"]),
-        "width": int(manifest_dict["grid"]["dimensions"]["width"]),
-        "transform": rio.Affine(
-            manifest_dict["grid"]["affineTransform"]["scaleX"],
-            manifest_dict["grid"]["affineTransform"]["shearX"],
-            manifest_dict["grid"]["affineTransform"]["translateX"],
-            manifest_dict["grid"]["affineTransform"]["shearY"],
-            manifest_dict["grid"]["affineTransform"]["scaleY"],
-            manifest_dict["grid"]["affineTransform"]["translateY"],
-        ),
-        "crs": manifest_dict["grid"]["crsCode"],
-    }
+    if "outparameters" in row:
+        metadata_rio = json.loads(row["outparameters"])
+        metadata_rio["count"] = data_np.shape[0]
+    else:
+        metadata_rio = {
+            "driver": "GTiff",
+            "count": data_np.shape[0],
+            "dtype": data_np.dtype,
+            "height": int(manifest_dict["grid"]["dimensions"]["height"]),
+            "width": int(manifest_dict["grid"]["dimensions"]["width"]),
+            "transform": rio.Affine(
+                manifest_dict["grid"]["affineTransform"]["scaleX"],
+                manifest_dict["grid"]["affineTransform"]["shearX"],
+                manifest_dict["grid"]["affineTransform"]["translateX"],
+                manifest_dict["grid"]["affineTransform"]["shearY"],
+                manifest_dict["grid"]["affineTransform"]["scaleY"],
+                manifest_dict["grid"]["affineTransform"]["translateY"],
+            ),
+            "crs": manifest_dict["grid"]["crsCode"],
+        }
 
     # Create the output folder if it doesn't exist.
     outfile = pathlib.Path(output_path) / row.outname
