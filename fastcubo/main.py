@@ -1,5 +1,6 @@
 import concurrent.futures
 import pathlib
+import json
 import re
 from typing import List, Optional, Tuple, Union
 
@@ -10,11 +11,12 @@ from fastcubo.utils import getImage_batch, query_utm_crs_info
 
 
 def query_getPixels_image(
-    points: List[Tuple[float, float]],
     collection: str,
     bands: List[str],
-    edge_size: float,
-    resolution: float,
+    out_parameters: Optional[List[dict]] = None,
+    points: Optional[List[Tuple[float, float]]] = None,
+    edge_size: Optional[float] = None,
+    resolution: Optional[float] = None,
     outnames: Optional[List[str]] = None,
 ) -> pd.DataFrame:
     """
@@ -22,6 +24,10 @@ def query_getPixels_image(
     retrieve the data using `ee.data.getPixels`.
 
     Args:
+        out_parameters (Optional[dict], optional): The parameters
+            to be used in the query and for exporting the data.
+            Defaults to None. If None, the user must provide the
+            points, edge_size, resolution, and outnames.
         points (List[Tuple[float, float]]): The centroid 
             of the square to be queried.
         collection (str): The collection to be queried.
@@ -35,33 +41,56 @@ def query_getPixels_image(
         pd.DataFrame: A DataFrame with the metadata needed to 
             retrieve the data using `ee.data.getPixels`.
     """
+    if out_parameters is None:
+        if outnames is None:
+            basename = collection.replace("/", "_")
+            outnames = [f"{basename}__{i:04d}.tif" for i in range(len(points))]
 
-    if outnames is None:
-        basename = collection.replace("/", "_")
-        outnames = [f"{basename}__{i:04d}.tif" for i in range(len(points))]
+        # From EPSG to UTM
+        epsg_info = [query_utm_crs_info(lon, lat) for lon, lat in points]
+        lon_utm, lat_utm, zone_epsg = zip(*epsg_info)
 
-    # From EPSG to UTM
-    epsg_info = [query_utm_crs_info(lon, lat) for lon, lat in points]
-    lon_utm, lat_utm, zone_epsg = zip(*epsg_info)
+        # Fix the center of the square to be the upper left corner
+        lon_utm = [x - edge_size * resolution / 2 for x in lon_utm]
+        lat_utm = [y + edge_size * resolution / 2 for y in lat_utm]
 
-    # Fix the center of the square to be the upper left corner
-    lon_utm = [x - edge_size * resolution / 2 for x in lon_utm]
-    lat_utm = [y + edge_size * resolution / 2 for y in lat_utm]
+        # Create the query_table
+        query_table = pd.DataFrame(
+            {
+                "lon": [lon for lon, _ in points],
+                "lat": [lat for _, lat in points],
+                "x": lon_utm,
+                "y": lat_utm,
+                "epsg": out_parameters["crs"],
+                "collection": collection,
+                "bands": ", ".join(bands),
+                "edge_size": edge_size,
+                "resolution": resolution,
+            }
+        )    
+    else:
+        if outnames is None:
+            basename = collection.replace("/", "_")
+            outnames = [f"{basename}__{i:04d}.tif" for i in range(len(out_parameters))]
 
-    # Create the query_table
-    query_table = pd.DataFrame(
-        {
-            "lon": [lon for lon, _ in points],
-            "lat": [lat for _, lat in points],
-            "x": lon_utm,
-            "y": lat_utm,
-            "epsg": zone_epsg,
+        # does the outname exist?
+        if any(["crs" not in x for x in out_parameters]):
+            raise ValueError("The 'crs' parameter must be provided in all the out_parameters.")
+
+        # Define the query_table
+        query_table = pd.DataFrame({
+            "x": [x["transform"][2] for x in out_parameters],
+            "y": [x["transform"][5] for x in out_parameters],
+            "epsg": [x["crs"] for x in out_parameters],
             "collection": collection,
             "bands": ", ".join(bands),
-            "edge_size": edge_size,
-            "resolution": resolution,
-        }
-    )
+            "edge_size": [x["width"] for x in out_parameters],
+            "resolution": [x["transform"][0] for x in out_parameters],
+        })
+
+        # serialize to string
+        query_table["outparameters"] = [json.dumps(x) for x in out_parameters]
+
 
     # Add manifest to the query_table
     manifests = []
@@ -83,7 +112,7 @@ def query_getPixels_image(
                     "scaleY": -row["resolution"],
                     "translateY": row["y"],
                 },
-                "crsCode": zone_epsg[index],
+                "crsCode": row["epsg"],
             },
         }
         manifests.append(str(manifest))
@@ -96,12 +125,13 @@ def query_getPixels_image(
 
 
 def query_getPixels_imagecollection(
-    point: Tuple[float, float],
     collection: str,
     bands: List[str],
-    edge_size: float,
-    resolution: float,
     data_range: Tuple[str, str],
+    out_parameter: Optional[dict] = None,
+    point: Optional[Tuple[float, float]] = None,
+    edge_size: Optional[float] = None,
+    resolution: Optional[float] = None,
     outnames: Optional[List[str]] = None,
 ) -> pd.DataFrame:
     """
@@ -124,44 +154,89 @@ def query_getPixels_imagecollection(
         pd.DataFrame: A DataFrame with the metadata needed to 
             retrieve the data using `ee.data.getPixels`.
     """
-    # From EPSG to UTM
-    lon_utm, lat_utm, zone_epsg = query_utm_crs_info(*point)
+    if out_parameter is None:
 
-    # Fix the center of the square to be the upper left corner
-    lon_utm = lon_utm - edge_size * resolution / 2
-    lat_utm = lat_utm + edge_size * resolution / 2
+        # From EPSG to UTM
+        lon_utm, lat_utm, zone_epsg = query_utm_crs_info(*point)
 
-    # Get the images
-    images = (
-        ee.ImageCollection(collection)
-        .filterBounds(ee.Geometry.Point((lon_utm, lat_utm), proj=zone_epsg))
-        .filterDate(data_range[0], data_range[1])
-        .select(bands)
-    )
+        # Fix the center of the square to be the upper left corner
+        lon_utm = lon_utm - edge_size * resolution / 2
+        lat_utm = lat_utm + edge_size * resolution / 2
 
-    # Get the ids and dates
-    ids = images.aggregate_array("system:id").getInfo()
-    dates = images.aggregate_array("system:time_start").getInfo()
-    dates_str = [
-        pd.to_datetime(date, unit="ms").strftime("%Y-%m-%d %H:%M:%S") for date in dates
-    ]
+        # Get the images
+        images = (
+            ee.ImageCollection(collection)
+            .filterBounds(ee.Geometry.Point((lon_utm, lat_utm), proj=zone_epsg))
+            .filterDate(data_range[0], data_range[1])
+            .select(bands)
+        )
 
-    # Create the query_table
-    query_table = pd.DataFrame(
-        {
-            "lon": point[0],
-            "lat": point[1],
-            "x": lon_utm,
-            "y": lat_utm,
-            "epsg": zone_epsg,
-            "collection": collection,
-            "bands": ", ".join(bands),
-            "edge_size": edge_size,
-            "resolution": resolution,
-            "img_id": ids,
-            "img_date": dates_str,
-        }
-    )
+        # Get the ids and dates
+        ids = images.aggregate_array("system:id").getInfo()
+        dates = images.aggregate_array("system:time_start").getInfo()
+        dates_str = [
+            pd.to_datetime(date, unit="ms").strftime("%Y-%m-%d %H:%M:%S") for date in dates
+        ]
+
+        # Create the query_table
+        query_table = pd.DataFrame(
+            {
+                "lon": point[0],
+                "lat": point[1],
+                "x": lon_utm,
+                "y": lat_utm,
+                "epsg": zone_epsg,
+                "collection": collection,
+                "bands": ", ".join(bands),
+                "edge_size": edge_size,
+                "resolution": resolution,
+                "img_id": ids,
+                "img_date": dates_str,
+            }
+        )
+    else:
+        # does the outname exist?
+        if "crs" not in out_parameter:
+            raise ValueError("The 'crs' parameter must be provided in all the out_parameters.")
+
+        lon_utm = out_parameter["transform"][2]
+        lat_utm = out_parameter["transform"][5]
+        zone_epsg = out_parameter["crs"]
+
+        # Get the images
+        images = (
+            ee.ImageCollection(collection)
+            .filterBounds(ee.Geometry.Point((lon_utm, lat_utm), proj=zone_epsg))
+            .filterDate(data_range[0], data_range[1])
+            .select(bands)
+        )
+        
+        # Get the ids and dates
+        ids = images.aggregate_array("system:id").getInfo()
+        dates = images.aggregate_array("system:time_start").getInfo()
+        dates_str = [
+            pd.to_datetime(date, unit="ms").strftime("%Y-%m-%d %H:%M:%S") for date in dates
+        ]
+        edge_size = out_parameter["width"]
+        resolution = out_parameter["transform"][0]
+
+
+        # Create the query_table
+        query_table = pd.DataFrame(
+            {
+                "x": lon_utm,
+                "y": lat_utm,
+                "epsg": zone_epsg,
+                "collection": collection,
+                "bands": ", ".join(bands),
+                "edge_size": edge_size,
+                "resolution": resolution,
+                "img_id": ids,
+                "img_date": dates_str,
+            }
+        )
+
+        query_table["outparameters"] = json.dumps(out_parameter)
 
     # Add manifest to the query_table
     manifests = []
